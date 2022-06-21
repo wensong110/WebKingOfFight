@@ -1,5 +1,7 @@
 package KOFServer
 
+import "sync"
+
 type Option int
 
 const (
@@ -29,11 +31,14 @@ func NewPlayerOptions(index int) *PlayerOptions {
 type LogicFrame struct {
 	LogicFrameCnt int
 	Input         []*PlayerOptions
+	_mutex        sync.Mutex `json:"-"`
 }
 
 var LogicFrameCnt int = 0
 
 func (p *LogicFrame) CollectPlayerOptions(playerOptions *PlayerOptions) {
+	p._mutex.Lock()
+	defer p._mutex.Unlock()
 	p.Input = append(p.Input, playerOptions)
 }
 func NewLogicFrame() *LogicFrame {
@@ -41,5 +46,6 @@ func NewLogicFrame() *LogicFrame {
 	return &LogicFrame{
 		LogicFrameCnt: LogicFrameCnt,
 		Input:         make([]*PlayerOptions, 0),
+		_mutex:        sync.Mutex{},
 	}
 }
