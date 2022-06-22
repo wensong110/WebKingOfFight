@@ -1,0 +1,13 @@
+body{
+    
+}
+
+#game-div{
+    width: 1280px;
+    height: 720px;
+    margin-left: calc( ( 100% - 1280px) / 2 );
+    margin-top: calc( ( 100vh - 720px) / 2 );
+    background-image: url(../image/background/0.gif);
+    background-position: top;
+    background-size: cover;
+}
