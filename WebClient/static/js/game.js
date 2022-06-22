@@ -41,14 +41,14 @@ class KingOfFight{
     }
 }
 
-
+var environment_context={};
 
 class KObject{
-    constructor(gamePlay){
-        this.id=gamePlay.kObjectIdCnt++;
-        gamePlay.kObjects.push(this);
+    constructor(){
+        this.id=environment_context.gamePlay.kObjectIdCnt++;
+        environment_context.gamePlay.kObjects.push(this);
         this.hasStarted=false;
-        this.gamePlay=gamePlay;
+        this.gamePlay=environment_context.gamePlay;
     }
     start(){
 
@@ -67,24 +67,117 @@ class KObject{
     }
 }
 
-class KCanvasObject extends KObject{
-    constructor(gamePlay){
-        super(gamePlay);
-        var $canvas = $("<canvas></canvas>");
-        $canvas.css("width",this.gamePlay.$window.css("width"));
-        $canvas.css("height",this.gamePlay.$window.css("height"));
-        console.log(this.gamePlay.$window)
-        this.ctx = $canvas[0].getContext('2d');
-        this.gamePlay.$window.append($canvas);
+class KComponent extends KObject{
+    constructor(parent){
+        super();
+        this.parent=parent;
     }
     start(){
-
+        super.start();
     }
-
     tick(delta){
+        super.tick(delta);
     }
     destroy(){
 
+        super.destroy();
+    }
+}
+
+class KCanvasObject extends KObject{
+    constructor(){
+        super();
+        this.$canvas = $("<canvas></canvas>");
+        this.$canvas.css("width",this.gamePlay.$window.css("width"));
+        this.$canvas.css("height",this.gamePlay.$window.css("height"));
+        this.width=this.gamePlay.$window.css("width");
+        this.height=this.gamePlay.$window.css("height");
+        this.width=this.width.split("px")[0];
+        this.height=this.height.split("px")[0];
+        this.ctx = this.$canvas[0].getContext('2d');
+        this.gamePlay.$window.append(this.$canvas);
+    }
+    start(){
+        super.start();
+        console.log(this.width)
+    }
+    tick(delta){
+        super.tick(delta);
+        this.ctx.clearRect(0,0,this.width,this.height);
+    }
+    destroy(){
+
+        super.destroy();
+    }
+}
+
+//锚点在左上
+class KActorObject extends KObject{
+    constructor(width,height){
+        super();
+        this.x=0;
+        this.y=0;
+        this.width=width;
+        this.height=height;
+        this.xSpeed=0;
+        this.ySpeed=0;
+    }
+    start(){
+        super.start();
+    }
+    tick(delta){
+        super.tick(delta);
+        this.x+=this.xSpeed;
+        this.y+=this.ySpeed;
+    }
+
+    destroy(){
+
+        super.destroy();
+    }
+}
+
+class KCanvasActorObject extends KActorObject{
+    constructor(width,height,canvasObject){
+        super(width,height);
+        this.ctx=canvasObject.ctx;
+    }
+    start(){
+        super.start();
+    }
+    tick(delta){
+        super.tick(delta);
+        this.render();
+    }
+    render(){
+        this.ctx.fillStyle = 'green';
+        this.ctx.fillRect(this.x,this.y,this.width,this.height);
+    }
+
+    destroy(){
+
+        super.destroy();
+    }
+}
+
+class KGravityComponent extends KComponent{
+    constructor(parent){
+        super(parent);
+    }
+    start(){
+        super.start();
+    }
+    tick(delta){
+        super.tick(delta);
+        if(this.parent.ySpeed!=undefined){
+            if(this.parent instanceof KActorObject){
+                this.parent.ySpeed+=0.05;
+            }
+        }
+    }
+    destroy(){
+
+        super.destroy();
     }
 }
 
