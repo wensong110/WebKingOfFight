@@ -63,7 +63,7 @@ class KObject{
         if(pos==-1){
             return
         }
-        gamePlay.kObjects.slice(pos,1)
+        gamePlay.kObjects=gamePlay.kObjects.slice(pos,1)
     }
 }
 
@@ -90,6 +90,8 @@ class KCanvasObject extends KObject{
         this.$canvas = $("<canvas></canvas>");
         this.$canvas.css("width",this.gamePlay.$window.css("width"));
         this.$canvas.css("height",this.gamePlay.$window.css("height"));
+        this.$canvas.attr("height","720px");
+        this.$canvas.attr("width","1280px");
         this.width=this.gamePlay.$window.css("width");
         this.height=this.gamePlay.$window.css("height");
         this.width=this.width.split("px")[0];
@@ -171,7 +173,7 @@ class KGravityComponent extends KComponent{
         super.tick(delta);
         if(this.parent.ySpeed!=undefined){
             if(this.parent instanceof KActorObject){
-                this.parent.ySpeed+=0.05;
+                this.parent.ySpeed+=0.5;
             }
         }
     }
