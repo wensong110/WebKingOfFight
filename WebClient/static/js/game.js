@@ -25,7 +25,8 @@ class KingOfFight{
     }
     
     loop(timestamp){
-        for (var obj of this.kObjects){
+        for (let i=0;i<this.kObjects.length;i++){
+            let obj=this.kObjects[i];
             if(obj.hasStarted==false){
                 obj.start();
                 obj.hasStarted=true;
