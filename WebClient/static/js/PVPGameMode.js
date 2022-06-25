@@ -24,25 +24,23 @@ class PVPGameMode{
         player.collsion.addTriangle(PointUtil.makeTriangle(PointUtil.makePoint(0,0),PointUtil.makePoint(10,0),PointUtil.makePoint(0,10)));
         player.collsion.addTriangle(PointUtil.makeTriangle(PointUtil.makePoint(0,10),PointUtil.makePoint(10,0),PointUtil.makePoint(10,10)));
         player.collsion.debugRenderOpen();
-        document.addEventListener("keydown",function(e){
-            if(e.key=='a'){
-                player.move.beginLeft()
-            }
-            if(e.key=='d'){
-                player.move.beginRight()
-            }
-            if(e.key=='k'){
-                player.move.jump()
-            }
-        })
-        document.addEventListener("keyup",function(e){
-            if(e.key=='a'){
-                player.move.endLeft()
-            }
-            if(e.key=='d'){
-                player.move.endRight()
-            }
-        })
+
+        let inputer = new NetworkInputer(player.move,0);
+        inputer.addFunction(player.move,0,0,player.move.beginLeft);
+        inputer.addFunction(player.move,1,0,player.move.endLeft);
+        inputer.addFunction(player.move,2,0,player.move.beginRight);
+        inputer.addFunction(player.move,3,0,player.move.endRight);
+        inputer.addFunction(player.move,4,0,player.move.jump);
+        inputer.init("127.0.0.1:8888/server");
+
+        let sender = new KeyBoardSendInputer(player,0);
+        sender.addFunction("a","keydown",0);
+        sender.addFunction("a","keyup",1);
+        sender.addFunction("d","keydown",2);
+        sender.addFunction("d","keyup",3);
+        sender.addFunction("k","keydown",4);
+
+        
         this.gamePlay.startLoop();
     }
 
