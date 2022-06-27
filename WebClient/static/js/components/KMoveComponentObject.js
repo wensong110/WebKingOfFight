@@ -1,6 +1,6 @@
 class KMoveComponentObject extends KComponent{
-    constructor(parent){
-        super(parent)
+    constructor(parent,id){
+        super(parent,id)
         if (parent instanceof KActorObject){
             this.isLeft=0;
             this.isRight=0;

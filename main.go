@@ -27,6 +27,12 @@ func main() {
 		}
 		server.AddConn(theCon)
 	})
+	var playerIndexCnt int = 0
+	http.HandleFunc("/getPlayerIndex", func(w http.ResponseWriter, r *http.Request) {
+		str := fmt.Sprintf("{ index: %d }", playerIndexCnt)
+		playerIndexCnt++
+		w.Write([]byte(str))
+	})
 	server.StartTick(context.Background())
 	http.ListenAndServe(":8888", nil)
 }

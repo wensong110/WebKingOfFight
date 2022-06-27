@@ -47,8 +47,9 @@ class KeyBoardSendInputer extends Inputer{
     }
 
     addFunction(key,event,option){
+        var p=this;
         document.addEventListener(event,function(e){
-            if(e.key==key) this.inKey(key+event,option);
+            if(e.key==key) p.inKey(key+event,option);
         })
     }
 
@@ -93,13 +94,15 @@ class NetworkInputer extends Inputer{
     }
 
     init(url){
+        var fMap=this.fMap;
+        var fOwner=this.fOwner;
         this.client.connectToServer(url,function(ee){
             let e = JSON.parse(ee.data);
-            //console.log(e);
+            //console.log(ee.data);
             for(let i=0;i<e.Input.length;i++){
                 let playerOption=e.Input[i];
                 for(let op of playerOption.Options){
-                    if(this.fMap[playerOption.PlayerIndex*10000+op.Option]){
+                    if(fMap[playerOption.PlayerIndex*10000+op.Option]){
                         fMap[playerOption.PlayerIndex*10000+op.Option].bind(fOwner[playerOption.PlayerIndex*10000+op.Option])();
                     }
                 }

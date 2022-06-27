@@ -12,7 +12,7 @@ type Server struct {
 	timer      *Timer
 	_mutex     sync.Mutex
 	connects   []*websocket.Conn
-	logicFrame LogicFrame
+	logicFrame *LogicFrame
 }
 
 func NewServer() *Server {
@@ -20,7 +20,7 @@ func NewServer() *Server {
 		timer:      NewTimer(16),
 		_mutex:     sync.Mutex{},
 		connects:   make([]*websocket.Conn, 0),
-		logicFrame: *NewLogicFrame(),
+		logicFrame: NewLogicFrame(),
 	}
 }
 
@@ -41,13 +41,29 @@ func (server *Server) handleFunc(conn *websocket.Conn, ctx context.Context) {
 		default:
 			for {
 				var playerOptions PlayerOptions
+				// _, bytes, err := conn.ReadMessage()
+				// if err != nil {
+				// 	fmt.Printf("读取出错:%v\n", err)
+				// 	return
+				// }
+				// fmt.Println(string(bytes))
+				// fmt.Println("=====")
 				err := conn.ReadJSON(&playerOptions)
-				//_, bytes, err := conn.ReadMessage()
-				//fmt.Println(string(bytes))
 				if err != nil {
 					fmt.Printf("读取出错:%v\n", err)
+					server._mutex.Lock()
+					j := 0
+					for _, v := range server.connects {
+						if v != conn {
+							server.connects[j] = v
+							j++
+						}
+					}
+					server.connects = server.connects[:j]
+					server._mutex.Unlock()
+					return
 				}
-				fmt.Println(playerOptions)
+				//fmt.Println(playerOptions)
 				server.addPlayerOptionsToFrame(&playerOptions)
 			}
 		}
@@ -79,11 +95,25 @@ func (server *Server) StartTick(ctx context.Context) {
 				server.timer.cond.Wait()
 				server.timer._mutex.Unlock()
 				server._mutex.Lock()
-				for _, x := range server.connects {
-					err := x.WriteJSON(server.logicFrame)
-					if err != nil {
-						fmt.Printf("写入错误:%v\n", err)
+				if len(server.logicFrame.Input) > 0 {
+					for _, x := range server.connects {
+						err := x.WriteJSON(server.logicFrame)
+						if err != nil {
+							fmt.Printf("写入错误:%v\n", err)
+							server._mutex.Lock()
+							j := 0
+							for _, v := range server.connects {
+								if v != x {
+									server.connects[j] = v
+									j++
+								}
+							}
+							server.connects = server.connects[:j]
+							server._mutex.Unlock()
+							return
+						}
 					}
+					server.logicFrame = NewLogicFrame()
 				}
 				server._mutex.Unlock()
 			}

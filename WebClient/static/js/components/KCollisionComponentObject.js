@@ -1,6 +1,6 @@
 class KCollisionComponentObject extends KComponent{
-    constructor(parent){
-        super(parent);
+    constructor(parent,id){
+        super(parent,id);
         if(parent instanceof KActorObject){
             this.triangleSet=[];
         }
@@ -11,43 +11,62 @@ class KCollisionComponentObject extends KComponent{
         KCollisionComponentObject.allTriangleParent.push(this.parent);
     }
 
-    // isCollsionX(){
-    //     if(this.parent instanceof KActorObject){
-    //         for(let me of this.triangleSet){
-    //             for(let mep of me){
-    //                 let nxtp={
-    //                     x:mep.x+this.parent.xSpeed+this.parent.x,
-    //                     y:mep.y+this.parent.y
-    //                 }
-    //                 for(let othert of KCollisionComponentObject.allTriangle){
-    //                     if(PointUtil.pointInTriangle(othert,nxtp)){
-    //                         return true;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         return false
-    //     }
-    // }
+    isCollsionX(){
+        let saveY=this.parent.ySpeed;
+        this.parent.ySpeed=0;
+        let ret = this.isCollsion();
+        this.parent.ySpeed=saveY;
+        return ret;
+    }
 
-    // isCollsionY(){
-    //     if(this.parent instanceof KActorObject){
-    //         for(let me of this.triangleSet){
-    //             for(let mep of me){
-    //                 let nxtp={
-    //                     x:mep.x+this.parent.x,
-    //                     y:mep.y+this.parent.ySpeed+this.parent.y
-    //                 }
-    //                 for(let othert of KCollisionComponentObject.allTriangle){
-    //                     if(PointUtil.pointInTriangle(othert,nxtp)){
-    //                         return true;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         return false
-    //     }
-    // }
+    isCollsionY(){
+        let saveX=this.parent.xSpeed;
+        this.parent.xSpeed=0;
+        let ret = this.isCollsion();
+        this.parent.xSpeed=saveX;
+        return ret;
+    }
+
+    getCollsionComponents(){
+        let ans=new Set();
+        if(this.parent instanceof KActorObject){
+            for(let me of this.triangleSet){
+                for(let mep of me){
+                    let nxtp={
+                        x:mep.x+this.parent.xSpeed+this.parent.x,
+                        y:mep.y+this.parent.ySpeed+this.parent.y
+                    }
+                    for(let i=0;i<KCollisionComponentObject.allTriangle.length;i++){
+                        let othert = JSON.parse(JSON.stringify(KCollisionComponentObject.allTriangle[i]));
+                        if(this.parent === KCollisionComponentObject.allTriangleParent[i]) continue;
+                        othert[0].x+=KCollisionComponentObject.allTriangleParent[i].x;
+                        othert[1].x+=KCollisionComponentObject.allTriangleParent[i].x;
+                        othert[2].x+=KCollisionComponentObject.allTriangleParent[i].x;
+                        othert[0].y+=KCollisionComponentObject.allTriangleParent[i].y;
+                        othert[1].y+=KCollisionComponentObject.allTriangleParent[i].y;
+                        othert[2].y+=KCollisionComponentObject.allTriangleParent[i].y;
+                        //console.log(this.triangleSet.indexOf(othert))
+                        if(PointUtil.lineCross(nxtp.x,nxtp.y,mep.x,mep.y,othert[0].x,othert[0].y,othert[1].x,othert[1].y)){
+                            this.renderTriangle(othert);
+                            this.renderTriangle(me);
+                            ans.add(allTriangleParent[i]);
+                        }
+                        if(PointUtil.lineCross(nxtp.x,nxtp.y,mep.x,mep.y,othert[1].x,othert[1].y,othert[2].x,othert[2].y)){
+                            this.renderTriangle(othert);
+                            this.renderTriangle(me);
+                            ans.add(allTriangleParent[i]);
+                        }
+                        if(PointUtil.lineCross(nxtp.x,nxtp.y,mep.x,mep.y,othert[0].x,othert[0].y,othert[2].x,othert[2].y)){
+                            this.renderTriangle(othert);
+                            this.renderTriangle(me);
+                            ans.add(allTriangleParent[i]);
+                        }
+                    }
+                }
+            }
+            return Array.from(ans);
+        }
+    }
 
     isCollsion(){
         if(this.parent instanceof KActorObject){

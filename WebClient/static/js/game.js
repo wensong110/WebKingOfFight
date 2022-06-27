@@ -50,6 +50,7 @@ class KObject{
         environment_context.gamePlay.kObjects.push(this);
         this.hasStarted=false;
         this.gamePlay=environment_context.gamePlay;
+        this.components={}
     }
     start(){
 
@@ -69,9 +70,12 @@ class KObject{
 }
 
 class KComponent extends KObject{
-    constructor(parent){
+    constructor(parent,id){
         super();
         this.parent=parent;
+        if(id){
+            parent.components[id]=this;
+        }
     }
     start(){
         super.start();
@@ -164,8 +168,8 @@ class KCanvasActorObject extends KActorObject{
 }
 
 class KGravityComponent extends KComponent{
-    constructor(parent){
-        super(parent);
+    constructor(parent,id){
+        super(parent,id);
     }
     start(){
         super.start();

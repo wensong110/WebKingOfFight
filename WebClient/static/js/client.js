@@ -1,5 +1,7 @@
 class Client{
-    constructor(){}
+    constructor(){
+        if(Client.ws) this.ws=Client.ws;
+    }
     connectToServerDebug(url){
         if(Client.ws){
             this.ws=Client.ws;
@@ -12,12 +14,17 @@ class Client{
             sendToServer(JSON.stringify(makeAPlayerOptions(1,[])))
         }
         this.ws.onmessage = function(e){
-            console.log(e)
+            console.log(e);
         }
     }
 
     connectToServer(url,f){
-        this.ws = new WebSocket("ws://"+url)
+        if(Client.ws){
+            this.ws=Client.ws;
+            return;
+        }
+        this.ws = new WebSocket("ws://"+url);
+        Client.ws=this.ws;
         this.ws.onopen = function(){
             console.log("连接成功");
         }
@@ -25,7 +32,8 @@ class Client{
     }
 
     sendToServer(data){
-        if(this.ws) this.ws.send(data)
+        //console.log(JSON.stringify(data));
+        if(this.ws) this.ws.send(JSON.stringify(data));
     }
 
 }

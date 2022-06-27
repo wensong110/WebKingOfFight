@@ -13,7 +13,7 @@ const (
 
 type LogicOption struct {
 	Option Option
-	Key    int
+	Key    string
 }
 
 type PlayerOptions struct {
