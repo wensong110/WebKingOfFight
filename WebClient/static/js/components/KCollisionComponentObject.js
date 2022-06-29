@@ -87,18 +87,18 @@ class KCollisionComponentObject extends KComponent{
                         othert[2].y+=KCollisionComponentObject.allTriangleParent[i].y;
                         //console.log(this.triangleSet.indexOf(othert))
                         if(PointUtil.lineCross(nxtp.x,nxtp.y,mep.x,mep.y,othert[0].x,othert[0].y,othert[1].x,othert[1].y)){
-                            this.renderTriangle(othert);
-                            this.renderTriangle(me);
+                            //this.renderTriangle(othert);
+                            //this.renderTriangle(me);
                             return true;
                         }
                         if(PointUtil.lineCross(nxtp.x,nxtp.y,mep.x,mep.y,othert[1].x,othert[1].y,othert[2].x,othert[2].y)){
-                            this.renderTriangle(othert);
-                            this.renderTriangle(me);
+                            //this.renderTriangle(othert);
+                            //this.renderTriangle(me);
                             return true;
                         }
                         if(PointUtil.lineCross(nxtp.x,nxtp.y,mep.x,mep.y,othert[0].x,othert[0].y,othert[2].x,othert[2].y)){
-                            this.renderTriangle(othert);
-                            this.renderTriangle(me);
+                            //this.renderTriangle(othert);
+                            //this.renderTriangle(me);
                             return true;
                         }
                     }
@@ -114,8 +114,10 @@ class KCollisionComponentObject extends KComponent{
 
     tick(delta){
         super.tick(delta);
-        if(this.isCollsion()){
+        if(this.isCollsionX()){
             this.parent.xSpeed=0;
+        }
+        if(this.isCollsionY()){
             this.parent.ySpeed=0;
         }
         if(this.debugRender) this.render();

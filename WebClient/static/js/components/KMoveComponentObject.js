@@ -6,9 +6,9 @@ class KMoveComponentObject extends KComponent{
             this.isRight=0;
             this.isJump=0;
             this.couldJump=1;
-            this.leftSpeed=1;
-            this.rightSpeed=1;
-            this.jumpSpeed=5;
+            this.leftSpeed=4;
+            this.rightSpeed=4;
+            this.jumpSpeed=11;
         }
     }
 

@@ -1,6 +1,7 @@
 class KingOfFight{
     constructor(selector){
         this.kObjects=[];
+        this.KComponents=[];
         this.kObjectIdCnt=1;
         this.lastTimestamp=0;
         if(!selector) this.$window=$("#game-div");
@@ -25,6 +26,26 @@ class KingOfFight{
     }
     
     loop(timestamp){
+        for (let i=0;i<this.KComponents.length;i++){
+            let obj=this.KComponents[i];
+            if(obj.beginTick){
+                obj.beginTick();
+            }
+        }
+        for (let i=0;i<this.kObjects.length;i++){
+            let obj=this.kObjects[i];
+            if(obj.beginTick){
+                obj.beginTick();
+            }
+        }
+        for (let i=0;i<this.KComponents.length;i++){
+            let obj=this.KComponents[i];
+            if(obj.hasStarted==false){
+                obj.start();
+                obj.hasStarted=true;
+            }
+            obj.tick(timestamp-this.lastTimestamp);
+        }
         for (let i=0;i<this.kObjects.length;i++){
             let obj=this.kObjects[i];
             if(obj.hasStarted==false){
@@ -32,6 +53,18 @@ class KingOfFight{
                 obj.hasStarted=true;
             }
             obj.tick(timestamp-this.lastTimestamp);
+        }
+        for (let i=0;i<this.KComponents.length;i++){
+            let obj=this.KComponents[i];
+            if(obj.endTick){
+                obj.endTick();
+            }
+        }
+        for (let i=0;i<this.kObjects.length;i++){
+            let obj=this.kObjects[i];
+            if(obj.endTick){
+                obj.endTick();
+            }
         }
         this.lastTimestamp=timestamp;
         requestAnimationFrame(this.loop.bind(this));
@@ -47,7 +80,11 @@ var environment_context={};
 class KObject{
     constructor(){
         this.id=environment_context.gamePlay.kObjectIdCnt++;
-        environment_context.gamePlay.kObjects.push(this);
+        if(this instanceof KComponent){
+            environment_context.gamePlay.KComponents.push(this);
+        }else{
+            environment_context.gamePlay.kObjects.push(this);
+        }
         this.hasStarted=false;
         this.gamePlay=environment_context.gamePlay;
         this.components={}
@@ -110,11 +147,15 @@ class KCanvasObject extends KObject{
     }
     tick(delta){
         super.tick(delta);
-        this.ctx.clearRect(0,0,this.width,this.height);
+        
     }
     destroy(){
 
         super.destroy();
+    }
+
+    beginTick(){
+        this.ctx.clearRect(0,0,this.width,this.height);
     }
 }
 
@@ -157,8 +198,8 @@ class KCanvasActorObject extends KActorObject{
         this.render();
     }
     render(){
-        this.ctx.fillStyle = 'green';
-        this.ctx.fillRect(this.x,this.y,this.width,this.height);
+        // this.ctx.fillStyle = 'green';
+        // this.ctx.fillRect(this.x,this.y,this.width,this.height);
     }
 
     destroy(){
